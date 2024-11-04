@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 10px;
+            display: none; /* Hidden until camera is ready */
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1>QR Code Scanner</h1>
+        <p>Point your camera at a QR code</p>
+        <div id="reader"></div>
+        <p id="result" class="text-primary"></p>
+        <button id="startButton" class="btn btn-primary mt-3">Start Scanning</button>
+    </div>
+
+    <script>
+        // Initialize variables
+        let html5QrcodeScanner;
+
+        // Function to start scanning
+        function startScanning() {
+            document.getElementById('reader').style.display = 'block'; // Show the camera view
+            document.getElementById('result').innerText = ''; // Clear previous results
+            
+            // Create an instance of Html5QrcodeScanner
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            
+            // Start scanning with defined configurations
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Use environment facing camera (back camera)
+                {
+                    fps: 10, // Frames per second
+                    qrbox: { width: 250, height: 250 } // Size of the scanning box
+                },
+                onScanSuccess,
+                onScanError
+            ).catch(err => {
+                console.error(`Error starting QR code scanner: ${err}`);
+            });
+        }
+
+        // Function called when a QR code is successfully scanned
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById('result').innerText = decodedText; // Display the decoded result
+            html5QrcodeScanner.stop(); // Stop the scanner after successful scan
+        }
+
+        // Function called on scan error
+        function onScanError(errorMessage) {
+            // Optionally handle scan errors
+            console.warn(`QR scan error: ${errorMessage}`);
+        }
+
+        // Event listener for the start button
+        document.getElementById('startButton').addEventListener('click', startScanning);
+    </script>
+</body>
+</html>
